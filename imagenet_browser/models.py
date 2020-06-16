@@ -1,4 +1,5 @@
 from datetime import datetime
+from random import randint
 import click
 from flask.cli import with_appcontext
 from imagenet_browser import db
@@ -17,6 +18,7 @@ class Synset(db.Model):
     gloss = db.Column(db.String(512), nullable=False)
 
     image = db.relationship("Image", back_populates="synset")
+    hyponyms = db.relationship("Synset", secondary=hyponyms, primaryjoin=id==hyponyms.c.synset_id, secondaryjoin=id==hyponyms.c.synset_hyponym_id)
 
     @staticmethod
     def get_schema():
@@ -115,8 +117,22 @@ def load_db_command():
             image = Image(
                 url=url,
                 imid=imid,
-                date=datetime.now().isoformat().split("T")[0],
+                date=datetime(2011, randint(9, 12), randint(1, 30)).isoformat().split("T")[0],
                 synset=synset
             )
             db.session.add(image)
+        db.session.commit()
+
+    with open(DB_LOAD_DIR + "wordnet.is_a.txt", "r") as hyponyms_file:
+        wnid_old = None
+        for hyponyms_line in hyponyms_file:
+            wnid, wnid_hyponym = hyponyms_line.split(sep=" ", maxsplit=1)
+            wnid_hyponym = wnid_hyponym[:-1]
+
+            if wnid != wnid_old:
+                synset = Synset.query.filter_by(wnid=wnid).first()
+                wnid_old = wnid
+
+            synset_hyponym = Synset.query.filter_by(wnid=wnid_hyponym).first()
+            synset.hyponyms.append(synset_hyponym)
         db.session.commit()

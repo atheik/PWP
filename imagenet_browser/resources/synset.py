@@ -8,7 +8,6 @@ from imagenet_browser.models import Synset, Image
 from imagenet_browser.constants import *
 from imagenet_browser.utils import ImagenetBrowserBuilder, create_error_response
 
-#TODO Implement SynsetHyponymCollection?
 #TODO The GET methods of SynsetCollection and SynsetHyponymCollection should paginate their items
 
 class SynsetCollection(Resource):
@@ -77,7 +76,7 @@ class SynsetItem(Resource):
             )
 
         body = ImagenetBrowserBuilder(
-            wnid=synset.wnid,
+            wnid=wnid,
             words=synset.words,
             gloss=synset.gloss
         )
@@ -85,10 +84,10 @@ class SynsetItem(Resource):
         body.add_control("self", url_for("api.synsetitem", wnid=wnid))
         body.add_control("profile", SYNSET_PROFILE)
         body.add_control("collection", url_for("api.synsetcollection"))
-        body.add_control_edit_synset(wnid=synset.wnid)
-        body.add_control_delete_synset(wnid=synset.wnid)
-        #TODO Hint to SynsetImageCollection
-        #TODO Hint to SynsetHyponymCollection
+        body.add_control_edit_synset(wnid=wnid)
+        body.add_control_delete_synset(wnid=wnid)
+        body.add_control("imagenet_browser:synsetimagecollection", url_for("api.synsetimagecollection", wnid=wnid))
+        body.add_control("imagenet_browser:synsethyponymcollection", url_for("api.synsethyponymcollection", wnid=wnid))
 
         return Response(json.dumps(body), 200, mimetype=MASON)
 
@@ -123,7 +122,7 @@ class SynsetItem(Resource):
             return create_error_response(
                 409,
                 "Already exists", 
-                "Synset with WordNet ID of '{}' already exists.".format(request.json["wnid"])
+                "Synset with WordNet ID of '{}' already exists.".format(synset.wnid)
             )
 
         return Response(status=204)
@@ -146,4 +145,30 @@ class SynsetItem(Resource):
 class SynsetHyponymCollection(Resource):
 
     def get(self, wnid):
-        raise NotImplemented
+        synset = Synset.query.filter_by(wnid=wnid).first()
+        if not synset:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset with WordNet ID of '{}' found".format(wnid)
+            )
+
+        body = ImagenetBrowserBuilder(
+            wnid=wnid,
+            words=synset.words,
+            gloss=synset.gloss
+        )
+        body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
+        body.add_control("self", url_for("api.synsethyponymcollection", wnid=wnid))
+        body["items"] = []
+        for synset_hyponym in synset.hyponyms:
+            item = ImagenetBrowserBuilder(
+                wnid=synset_hyponym.wnid,
+                words=synset_hyponym.words,
+                gloss=synset_hyponym.gloss
+            )
+            item.add_control("self", url_for("api.synsetitem", wnid=synset_hyponym.wnid))
+            item.add_control("profile", SYNSET_PROFILE)
+            body["items"].append(item)
+
+        return Response(json.dumps(body), 200, mimetype=MASON)

@@ -60,7 +60,6 @@ class SynsetImageCollection(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
-        print(Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == request.json["imid"]).all())
         if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == request.json["imid"]).first():
             return create_error_response(
                 409,
@@ -97,7 +96,7 @@ class ImageItem(Resource):
 
         body = ImagenetBrowserBuilder(
             url=image.url,
-            imid=image.imid,
+            imid=imid,
             date=image.date
         )
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
@@ -130,18 +129,18 @@ class ImageItem(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
-        if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == request.json["imid"]).first():
+        image.url = request.json["url"]
+        image.imid = request.json["imid"]
+        image.date = request.json["date"]
+
+        if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == image.imid).first():
             return create_error_response(
                 409,
                 "Already exists", 
                 "Image with WordNet ID of '{}' and image ID of '{}' already exists".format(
-                    wnid, request.json["imid"]
+                    wnid, image.imid
                 )
             )
-
-        image.url = request.json["url"]
-        image.imid = request.json["imid"]
-        image.date = request.json["date"]
 
         db.session.commit()
 
