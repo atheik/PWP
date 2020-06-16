@@ -5,8 +5,10 @@
 This project uses the Flask API project layout introduced here:  
 https://lovelace.oulu.fi/ohjelmoitava-web/ohjelmoitava-web/flask-api-project-layout/
 
+## Setup
+
 Download the Cygwin installer:  
-https://cygwin.com/setup-x86\_64.exe
+https://cygwin.com/setup-x86_64.exe
 
 Open a command prompt in the folder that you downloaded the Cygwin installer to and then issue the following command:
 
@@ -17,7 +19,7 @@ setup-x86_64 -OP git,python37,python37-pip,wget -qs https://ftp.acc.umu.se/mirro
 Open a Cygwin terminal from the Start menu and issue the following commands:
 
 ```sh
-git clone https://github.com/atheik/imagenet-browser.git ~
+git clone https://github.com/atheik/imagenet-browser.git
 cd imagenet-browser
 ```
 
