@@ -27,7 +27,7 @@ class SynsetImageCollection(Resource):
         body.add_control("self", url_for("api.synsetimagecollection", wnid=wnid))
         body.add_control_add_image()
         body["items"] = []
-        for image in Image.query.join(Synset).filter(Synset.wnid == wnid).all():
+        for image in Image.query.filter(Image.synset_wnid == wnid).all():
             item = ImagenetBrowserBuilder(
                 url=image.url,
                 imid=image.imid,
@@ -86,7 +86,7 @@ class SynsetImageCollection(Resource):
 class ImageItem(Resource):
 
     def get(self, wnid, imid):
-        image = Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == imid).first()
+        image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
         if not image:
             return create_error_response(
                 404,
@@ -109,7 +109,7 @@ class ImageItem(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def put(self, wnid, imid):
-        image = Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == imid).first()
+        image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
         if not image:
             return create_error_response(
                 404,
@@ -147,7 +147,7 @@ class ImageItem(Resource):
         return Response(status=204)
 
     def delete(self, wnid, imid):
-        image = Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == imid).first()
+        image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
         if not image:
             return create_error_response(
                 404,
