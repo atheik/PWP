@@ -1,5 +1,6 @@
 import os
-from flask import Flask
+import json
+from flask import Flask, Response, url_for
 from flask_sqlalchemy import SQLAlchemy
 from imagenet_browser.constants import *
 
@@ -40,5 +41,17 @@ def create_app(test_config=None):
     @app.route("/profiles/<profile>/")
     def send_profile(profile):
         return "{} profile".format(profile)
+
+    from . import utils
+
+    @app.route("/api/")
+    def entry_point():
+        body = utils.ImagenetBrowserBuilder()
+
+        body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
+        body.add_control("imagenet_browser:synsetcollection", url_for("api.synsetcollection"))
+        body.add_control("imagenet_browser:imagecollection", url_for("api.imagecollection"))
+
+        return Response(json.dumps(body), 200, mimetype=MASON)
 
     return app

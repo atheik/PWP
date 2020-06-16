@@ -100,7 +100,7 @@ def load_db_command():
             db.session.add(synset)
         db.session.commit()
 
-    with open(DB_LOAD_DIR + "fall11_urls_lite.txt", "r", encoding="iso-8859-1") as urls_file:
+    with open(DB_LOAD_DIR + "fall11_urls.txt", "r", encoding="iso-8859-1") as urls_file:
         wnid_old = None
         for urls_line in urls_file:
             wnid_imid, url = urls_line.split(sep="\t", maxsplit=1)
@@ -110,6 +110,7 @@ def load_db_command():
             if wnid != wnid_old:
                 synset = Synset.query.filter_by(wnid=wnid).first()
                 wnid_old = wnid
+                db.session.commit()
 
             image = Image(
                 url=url,
