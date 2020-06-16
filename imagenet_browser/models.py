@@ -7,18 +7,17 @@ from imagenet_browser.constants import *
 
 hyponyms = db.Table(
     "hyponyms",
-    db.Column("synset_id", db.Integer, db.ForeignKey("synset.id"), primary_key=True),
-    db.Column("synset_hyponym_id", db.Integer, db.ForeignKey("synset.id"), primary_key=True)
+    db.Column("synset_wnid", db.Integer, db.ForeignKey("synset.wnid"), primary_key=True),
+    db.Column("synset_hyponym_wnid", db.Integer, db.ForeignKey("synset.wnid"), primary_key=True)
 )
 
 class Synset(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    wnid = db.Column(db.String(9), unique=True, nullable=False)
+    wnid = db.Column(db.String(9), unique=True, nullable=False, primary_key=True)
     words = db.Column(db.String(256), nullable=False)
     gloss = db.Column(db.String(512), nullable=False)
 
     image = db.relationship("Image", back_populates="synset")
-    hyponyms = db.relationship("Synset", secondary=hyponyms, primaryjoin=id==hyponyms.c.synset_id, secondaryjoin=id==hyponyms.c.synset_hyponym_id)
+    hyponyms = db.relationship("Synset", secondary=hyponyms, primaryjoin=wnid==hyponyms.c.synset_wnid, secondaryjoin=wnid==hyponyms.c.synset_hyponym_wnid)
 
     @staticmethod
     def get_schema():
@@ -44,11 +43,10 @@ class Synset(db.Model):
 
 
 class Image(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
     url = db.Column(db.String(512), nullable=False)
-    imid = db.Column(db.Integer, nullable=False)
+    imid = db.Column(db.Integer, nullable=False, primary_key=True)
     date = db.Column(db.String(), nullable=False)
-    synset_id = db.Column(db.Integer, db.ForeignKey("synset.id"))
+    synset_wnid = db.Column(db.Integer, db.ForeignKey("synset.wnid"), primary_key=True)
 
     synset = db.relationship("Synset", back_populates="image")
 
@@ -56,17 +54,17 @@ class Image(db.Model):
     def get_schema():
         schema = {
             "type": "object",
-            "required": ["url", "imid", "date"]
+            "required": ["imid", "url", "date"]
         }
         props = schema["properties"] = {}
+        props["imid"] = {
+            "description": "The ID of the image",
+            "type": "integer",
+        }
         props["url"] = {
             "description": "The URL of the image; HTTP only",
             "type": "string",
             "pattern": "^https?://"
-        }
-        props["imid"] = {
-            "description": "The ID of the image",
-            "type": "integer",
         }
         props["date"] = {
             "description": "The date of the last access to the image through the URL; ISO 8601",

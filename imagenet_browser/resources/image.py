@@ -60,15 +60,6 @@ class SynsetImageCollection(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
-        if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == request.json["imid"]).first():
-            return create_error_response(
-                409,
-                "Already exists",
-                "Image with WordNet ID of '{}' and image ID of '{}' already exists".format(
-                    wnid, request.json["imid"]
-                )
-            )
-
         image = Image(
             url=request.json["url"],
             imid=request.json["imid"],
@@ -76,8 +67,17 @@ class SynsetImageCollection(Resource):
             synset=synset
         )
 
-        db.session.add(image)
-        db.session.commit()
+        try:
+            db.session.add(image)
+            db.session.commit()
+        except IntegrityError:
+            return create_error_response(
+                409,
+                "Already exists",
+                "Image with WordNet ID of '{}' and image ID of '{}' already exists".format(
+                    wnid, request.json["imid"]
+                )
+            )
 
         return Response(status=201, headers={
             "Location": url_for("api.imageitem", wnid=wnid, imid=request.json["imid"])
@@ -129,20 +129,20 @@ class ImageItem(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
-        if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == request.json["imid"]).first():
-            return create_error_response(
-                409,
-                "Already exists", 
-                "Image with WordNet ID of '{}' and image ID of '{}' already exists".format(
-                    wnid, request.json["imid"]
-                )
-            )
-
         image.url = request.json["url"]
         image.imid = request.json["imid"]
         image.date = request.json["date"]
 
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            return create_error_response(
+                409,
+                "Already exists",
+                "Image with WordNet ID of '{}' and image ID of '{}' already exists".format(
+                    wnid, request.json["imid"]
+                )
+            )
 
         return Response(status=204)
 
