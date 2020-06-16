@@ -122,7 +122,7 @@ class SynsetItem(Resource):
             return create_error_response(
                 409,
                 "Already exists", 
-                "Synset with WordNet ID of '{}' already exists.".format(synset.wnid)
+                "Synset with WordNet ID of '{}' already exists.".format(request.json["wnid"])
             )
 
         return Response(status=204)

@@ -129,18 +129,18 @@ class ImageItem(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
-        image.url = request.json["url"]
-        image.imid = request.json["imid"]
-        image.date = request.json["date"]
-
-        if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == image.imid).first():
+        if Image.query.join(Synset).filter(Synset.wnid == wnid, Image.imid == request.json["imid"]).first():
             return create_error_response(
                 409,
                 "Already exists", 
                 "Image with WordNet ID of '{}' and image ID of '{}' already exists".format(
-                    wnid, image.imid
+                    wnid, request.json["imid"]
                 )
             )
+
+        image.url = request.json["url"]
+        image.imid = request.json["imid"]
+        image.date = request.json["date"]
 
         db.session.commit()
 
