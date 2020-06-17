@@ -43,10 +43,10 @@ class Synset(db.Model):
 
 
 class Image(db.Model):
-    url = db.Column(db.String(512), nullable=False)
-    imid = db.Column(db.Integer, nullable=False, primary_key=True)
-    date = db.Column(db.String(), nullable=False)
     synset_wnid = db.Column(db.Integer, db.ForeignKey("synset.wnid"), primary_key=True)
+    imid = db.Column(db.Integer, nullable=False, primary_key=True)
+    url = db.Column(db.String(512), nullable=False)
+    date = db.Column(db.String(), nullable=False)
 
     synset = db.relationship("Synset", back_populates="image")
 
@@ -113,8 +113,8 @@ def load_db_command():
                 db.session.commit()
 
             image = Image(
-                url=url,
                 imid=imid,
+                url=url,
                 date=datetime(2011, randint(9, 12), randint(1, 30)).isoformat().split("T")[0],
                 synset=synset
             )

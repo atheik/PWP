@@ -22,21 +22,21 @@ class SynsetImageCollection(Resource):
             )
 
         body = ImagenetBrowserBuilder()
-        
+
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.synsetimagecollection", wnid=wnid))
         body.add_control_add_image()
         body["items"] = []
         for image in Image.query.filter(Image.synset_wnid == wnid).all():
             item = ImagenetBrowserBuilder(
-                url=image.url,
                 imid=image.imid,
+                url=image.url,
                 date=image.date
             )
             item.add_control("self", url_for("api.imageitem", wnid=wnid, imid=image.imid))
             item.add_control("profile", IMAGE_PROFILE)
             body["items"].append(item)
-            
+
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self, wnid):
@@ -61,8 +61,8 @@ class SynsetImageCollection(Resource):
             return create_error_response(400, "Invalid JSON document", str(e))
 
         image = Image(
-            url=request.json["url"],
             imid=request.json["imid"],
+            url=request.json["url"],
             date=request.json["date"],
             synset=synset
         )
@@ -95,8 +95,8 @@ class ImageItem(Resource):
             )
 
         body = ImagenetBrowserBuilder(
-            url=image.url,
             imid=imid,
+            url=image.url,
             date=image.date
         )
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
@@ -129,8 +129,8 @@ class ImageItem(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
-        image.url = request.json["url"]
         image.imid = request.json["imid"]
+        image.url = request.json["url"]
         image.date = request.json["date"]
 
         try:
@@ -171,8 +171,8 @@ class ImageCollection(Resource):
         body["items"] = []
         for image in Image.query.all():
             item = ImagenetBrowserBuilder(
-                url=image.url,
                 imid=image.imid,
+                url=image.url,
                 date=image.date
             )
             item.add_control("self", url_for("api.imageitem", wnid=image.synset.wnid, imid=image.imid))
