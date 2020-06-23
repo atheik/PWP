@@ -8,8 +8,6 @@ from imagenet_browser import db
 from imagenet_browser.utils import ImagenetBrowserBuilder, create_error_response
 from imagenet_browser.constants import *
 
-#TODO The GET methods of SynsetImageCollection and ImageCollection should paginate their items
-
 class SynsetImageCollection(Resource):
 
     def get(self, wnid):
@@ -21,13 +19,30 @@ class SynsetImageCollection(Resource):
                 "No synset with WordNet ID of '{}' found".format(wnid)
             )
 
+        try:
+            start = request.args.get("start", default=0, type=int)
+        except ValueError:
+            return create_error_response(
+                400,
+                "Invalid query parameter",
+                "Query parameter 'start' must be an integer"
+            )
+
         body = ImagenetBrowserBuilder()
 
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
-        body.add_control("self", url_for("api.synsetimagecollection", wnid=wnid))
+        body.add_control("self", url_for("api.synsetimagecollection", wnid=wnid) + "?start={}".format(start))
         body.add_control_add_image()
+
+        images = Image.query.filter(Image.synset_wnid == wnid).order_by(Image.imid).offset(start)
+
+        if start >= IMAGE_PAGE_SIZE:
+            body.add_control("prev", url_for("api.synsetimagecollection", wnid=wnid) + "?start={}".format(start - IMAGE_PAGE_SIZE))
+        if images.count() > IMAGE_PAGE_SIZE:
+            body.add_control("next", url_for("api.synsetimagecollection", wnid=wnid) + "?start={}".format(start + IMAGE_PAGE_SIZE))
+
         body["items"] = []
-        for image in Image.query.filter(Image.synset_wnid == wnid).all():
+        for image in images.limit(IMAGE_PAGE_SIZE):
             item = ImagenetBrowserBuilder(
                 imid=image.imid,
                 url=image.url,
@@ -168,14 +183,32 @@ class ImageCollection(Resource):
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.imagecollection"))
         body.add_control_add_image()
+
+        try:
+            start = request.args.get("start", default=0, type=int)
+        except ValueError:
+            return create_error_response(
+                400,
+                "Invalid query parameter",
+                "Query parameter 'start' must be an integer"
+            )
+
+        images = Image.query.order_by(Image.synset_wnid, Image.imid).offset(start)
+
+        if start >= IMAGE_PAGE_SIZE:
+            body.add_control("prev", url_for("api.imagecollection") + "?start={}".format(start - IMAGE_PAGE_SIZE))
+        if images.count() > IMAGE_PAGE_SIZE:
+            body.add_control("next", url_for("api.imagecollection") + "?start={}".format(start + IMAGE_PAGE_SIZE))
+
         body["items"] = []
-        for image in Image.query.all():
+        for image in images.limit(IMAGE_PAGE_SIZE):
             item = ImagenetBrowserBuilder(
+                synset_wnid=image.synset_wnid,
                 imid=image.imid,
                 url=image.url,
                 date=image.date
             )
-            item.add_control("self", url_for("api.imageitem", wnid=image.synset.wnid, imid=image.imid))
+            item.add_control("self", url_for("api.imageitem", wnid=image.synset_wnid, imid=image.imid))
             item.add_control("profile", IMAGE_PROFILE)
             body["items"].append(item)
             

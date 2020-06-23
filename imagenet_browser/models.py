@@ -17,7 +17,13 @@ class Synset(db.Model):
     gloss = db.Column(db.String(512), nullable=False)
 
     image = db.relationship("Image", back_populates="synset")
-    hyponyms = db.relationship("Synset", secondary=hyponyms, primaryjoin=wnid==hyponyms.c.synset_wnid, secondaryjoin=wnid==hyponyms.c.synset_hyponym_wnid)
+    hyponyms = db.relationship(
+        "Synset",
+        secondary=hyponyms,
+        primaryjoin=wnid==hyponyms.c.synset_wnid,
+        secondaryjoin=wnid==hyponyms.c.synset_hyponym_wnid,
+        order_by="Synset.wnid"
+    )
 
     @staticmethod
     def get_schema():
@@ -100,6 +106,8 @@ def load_db_command():
             db.session.add(synset)
         db.session.commit()
 
+    # TODO poor performance
+
     with open(DB_LOAD_DIR + "fall11_urls.txt", "r", encoding="iso-8859-1") as urls_file:
         wnid_old = None
         for urls_line in urls_file:
@@ -120,6 +128,8 @@ def load_db_command():
             )
             db.session.add(image)
         db.session.commit()
+
+    # TODO poor performance
 
     with open(DB_LOAD_DIR + "wordnet.is_a.txt", "r") as hyponyms_file:
         wnid_old = None

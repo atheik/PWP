@@ -8,18 +8,33 @@ from imagenet_browser.models import Synset, Image
 from imagenet_browser.constants import *
 from imagenet_browser.utils import ImagenetBrowserBuilder, create_error_response
 
-#TODO The GET methods of SynsetCollection and SynsetHyponymCollection should paginate their items
-
 class SynsetCollection(Resource):
 
     def get(self):
+        try:
+            start = request.args.get("start", default=0, type=int)
+        except ValueError:
+            return create_error_response(
+                400,
+                "Invalid query parameter",
+                "Query parameter 'start' must be an integer"
+            )
+
         body = ImagenetBrowserBuilder()
         
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.synsetcollection"))
         body.add_control_add_synset()
+
+        synsets = Synset.query.order_by(Synset.wnid).offset(start)
+
+        if start >= SYNSET_PAGE_SIZE:
+            body.add_control("prev", url_for("api.synsetcollection") + "?start={}".format(start - SYNSET_PAGE_SIZE))
+        if synsets.count() > SYNSET_PAGE_SIZE:
+            body.add_control("next", url_for("api.synsetcollection") + "?start={}".format(start + SYNSET_PAGE_SIZE))
+
         body["items"] = []
-        for synset in Synset.query.all():
+        for synset in synsets.limit(SYNSET_PAGE_SIZE):
             item = ImagenetBrowserBuilder(
                 wnid=synset.wnid,
                 words=synset.words,
@@ -145,6 +160,15 @@ class SynsetItem(Resource):
 class SynsetHyponymCollection(Resource):
 
     def get(self, wnid):
+        try:
+            start = request.args.get("start", default=0, type=int)
+        except ValueError:
+            return create_error_response(
+                400,
+                "Invalid query parameter",
+                "Query parameter 'start' must be an integer"
+            )
+
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -159,9 +183,17 @@ class SynsetHyponymCollection(Resource):
             gloss=synset.gloss
         )
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
-        body.add_control("self", url_for("api.synsethyponymcollection", wnid=wnid))
+        body.add_control("self", url_for("api.synsethyponymcollection", wnid=wnid) + "?start={}".format(start))
+
+        synset_hyponyms = synset.hyponyms[start:]
+
+        if start >= SYNSET_PAGE_SIZE:
+            body.add_control("prev", url_for("api.synsethyponymcollection", wnid=wnid) + "?start={}".format(start - SYNSET_PAGE_SIZE))
+        if len(synset_hyponyms) > SYNSET_PAGE_SIZE:
+            body.add_control("next", url_for("api.synsethyponymcollection", wnid=wnid) + "?start={}".format(start + SYNSET_PAGE_SIZE))
+
         body["items"] = []
-        for synset_hyponym in synset.hyponyms:
+        for synset_hyponym in synset_hyponyms[:SYNSET_PAGE_SIZE]:
             item = ImagenetBrowserBuilder(
                 wnid=synset_hyponym.wnid,
                 words=synset_hyponym.words,
