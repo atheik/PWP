@@ -284,7 +284,7 @@ class SynsetHyponymItem(Resource):
         body.add_control("self", url_for("api.synsethyponymitem", wnid=wnid, hyponym_wnid=hyponym_wnid))
         body.add_control("profile", SYNSET_PROFILE)
         body.add_control("collection", url_for("api.synsethyponymcollection", wnid=wnid))
-        body.add_control_delete_synset(wnid=wnid)
+        body.add_control_delete_hyponym(wnid=wnid, hyponym_wnid=hyponym_wnid)
 
         return Response(json.dumps(body), 200, mimetype=MASON)
 
