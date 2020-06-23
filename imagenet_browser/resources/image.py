@@ -49,7 +49,7 @@ class SynsetImageCollection(Resource):
                 url=image.url,
                 date=image.date
             )
-            item.add_control("self", url_for("api.imageitem", wnid=wnid, imid=image.imid))
+            item.add_control("self", url_for("api.synsetimageitem", wnid=wnid, imid=image.imid))
             item.add_control("profile", IMAGE_PROFILE)
             body["items"].append(item)
 
@@ -101,10 +101,10 @@ class SynsetImageCollection(Resource):
             )
 
         return Response(status=201, headers={
-            "Location": url_for("api.imageitem", wnid=wnid, imid=request.json["imid"])
+            "Location": url_for("api.synsetimageitem", wnid=wnid, imid=request.json["imid"])
         })
 
-class ImageItem(Resource):
+class SynsetImageItem(Resource):
 
     def get(self, wnid, imid):
         image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
@@ -121,7 +121,7 @@ class ImageItem(Resource):
             date=image.date
         )
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
-        body.add_control("self", url_for("api.imageitem", wnid=wnid, imid=imid))
+        body.add_control("self", url_for("api.synsetimageitem", wnid=wnid, imid=imid))
         body.add_control("profile", IMAGE_PROFILE)
         body.add_control("collection", url_for("api.synsetimagecollection", wnid=wnid))
         body.add_control_edit_image(wnid=wnid, imid=imid)
@@ -219,7 +219,7 @@ class ImageCollection(Resource):
                 url=image.url,
                 date=image.date
             )
-            item.add_control("self", url_for("api.imageitem", wnid=image.synset_wnid, imid=image.imid))
+            item.add_control("self", url_for("api.synsetimageitem", wnid=image.synset_wnid, imid=image.imid))
             item.add_control("profile", IMAGE_PROFILE)
             body["items"].append(item)
             

@@ -26,10 +26,10 @@ class Synset(db.Model):
     )
 
     @staticmethod
-    def get_schema():
+    def get_schema(wnid_only=False):
         schema = {
             "type": "object",
-            "required": ["wnid", "words", "gloss"]
+            "required": ["wnid"]
         }
         props = schema["properties"] = {}
         props["wnid"] = {
@@ -37,14 +37,16 @@ class Synset(db.Model):
             "type": "string",
             "pattern": "^n[0-9]{8}$"
         }
-        props["words"] = {
-            "description": "The words of the synset; rough synonyms",
-            "type": "string"
-        }
-        props["gloss"] = {
-            "description": "The gloss of the synset; a brief definition",
-            "type": "string"
-        }
+        if not wnid_only:
+            schema["required"].extend(["words", "gloss"])
+            props["words"] = {
+                "description": "The words of the synset; rough synonyms",
+                "type": "string"
+            }
+            props["gloss"] = {
+                "description": "The gloss of the synset; a brief definition",
+                "type": "string"
+            }
         return schema
 
 

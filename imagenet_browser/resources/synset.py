@@ -184,6 +184,7 @@ class SynsetHyponymCollection(Resource):
         )
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.synsethyponymcollection", wnid=wnid) + "?start={}".format(start))
+        body.add_control_add_hyponym(wnid=wnid)
 
         synset_hyponyms = synset.hyponyms[start:]
 
@@ -204,3 +205,107 @@ class SynsetHyponymCollection(Resource):
             body["items"].append(item)
 
         return Response(json.dumps(body), 200, mimetype=MASON)
+
+    def post(self, wnid):
+        synset = Synset.query.filter_by(wnid=wnid).first()
+        if not synset:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset with WordNet ID of '{}' found".format(wnid)
+            )
+
+        if not request.json:
+            return create_error_response(
+                415,
+                "Unsupported media type",
+                "Requests must be JSON"
+            )
+
+        try:
+            validate(request.json, Synset.get_schema(wnid_only=True))
+        except ValidationError as e:
+            return create_error_response(400, "Invalid JSON document", str(e))
+
+        synset_hyponym = Synset.query.filter_by(wnid=request.json["wnid"]).first()
+        if not synset_hyponym:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset with WordNet ID of '{}' found".format(request.json["wnid"])
+            )
+
+        try:
+            synset.hyponyms.index(synset_hyponym)
+        except ValueError:
+            pass
+        else:
+            return create_error_response(
+                409,
+                "Already exists",
+                "Synset hyponym with WordNet ID of '{}' already exists".format(request.json["wnid"])
+            )
+
+        synset.hyponyms.append(synset_hyponym)
+        db.session.commit()
+
+        return Response(status=201, headers={
+            "Location": url_for("api.synsethyponymitem", wnid=wnid, hyponym_wnid=request.json["wnid"])
+        })
+
+class SynsetHyponymItem(Resource):
+
+    def get(self, wnid, hyponym_wnid):
+        synset = Synset.query.filter_by(wnid=wnid).first()
+        if not synset:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset with WordNet ID of '{}' found".format(wnid)
+            )
+
+        synset_hyponym = Synset.query.filter_by(wnid=hyponym_wnid).first()
+
+        try:
+            synset.hyponyms.index(synset_hyponym)
+        except ValueError:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset hyponym with WordNet ID of '{}' found".format(hyponym_wnid)
+            )
+
+        body = ImagenetBrowserBuilder(
+            wnid=hyponym_wnid,
+            words=synset_hyponym.words,
+            gloss=synset_hyponym.gloss
+        )
+        body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
+        body.add_control("self", url_for("api.synsethyponymitem", wnid=wnid, hyponym_wnid=hyponym_wnid))
+        body.add_control("profile", SYNSET_PROFILE)
+        body.add_control("collection", url_for("api.synsethyponymcollection", wnid=wnid))
+        body.add_control_delete_synset(wnid=wnid)
+
+        return Response(json.dumps(body), 200, mimetype=MASON)
+
+    def delete(self, wnid, hyponym_wnid):
+        synset = Synset.query.filter_by(wnid=wnid).first()
+        if not synset:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset with WordNet ID of '{}' found".format(wnid)
+            )
+
+        try:
+            synset.hyponyms.remove(Synset.query.filter_by(wnid=hyponym_wnid).first())
+        except ValueError:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset hyponym with WordNet ID of '{}' found".format(hyponym_wnid)
+            )
+
+        db.session.commit()
+
+        return Response(status=204)

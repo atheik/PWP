@@ -97,6 +97,23 @@ class ImagenetBrowserBuilder(MasonBuilder):
             title="Delete this synset"
         )
 
+    def add_control_add_hyponym(self, wnid):
+        self.add_control(
+            "imagenet_browser:add_hyponym",
+            url_for("api.synsethyponymcollection", wnid=wnid),
+            method="POST",
+            title="Add a new hyponym",
+            schema=Synset.get_schema(wnid_only=True)
+        )
+
+    def add_control_delete_hyponym(self, wnid, hyponym_wnid):
+        self.add_control(
+            "imagenet_browser:delete",
+            url_for("api.synsethyponymitem", wnid=wnid, hyponym_wnid=hyponym_wnid),
+            method="DELETE",
+            title="Delete this hyponym"
+        )
+
     def add_control_add_image(self):
         self.add_control(
             "imagenet_browser:add_image",
@@ -110,7 +127,7 @@ class ImagenetBrowserBuilder(MasonBuilder):
     def add_control_edit_image(self, wnid, imid):
         self.add_control(
             "edit",
-            url_for("api.imageitem", wnid=wnid, imid=imid),
+            url_for("api.synsetimageitem", wnid=wnid, imid=imid),
             method="PUT",
             encoding="json",
             title="Edit this image",
@@ -120,7 +137,7 @@ class ImagenetBrowserBuilder(MasonBuilder):
     def add_control_delete_image(self, wnid, imid):
         self.add_control(
             "imagenet_browser:delete",
-            url_for("api.imageitem", wnid=wnid, imid=imid),
+            url_for("api.synsetimageitem", wnid=wnid, imid=imid),
             method="DELETE",
             title="Delete this image"
         )
