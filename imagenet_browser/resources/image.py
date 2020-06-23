@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from jsonschema import validate, ValidationError
 from flask import Response, request, url_for
 from flask_restful import Resource
@@ -75,6 +76,11 @@ class SynsetImageCollection(Resource):
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
 
+        try:
+            request.json["date"]
+        except KeyError:
+            request.json["date"] = datetime.now().isoformat().split("T")[0]
+
         image = Image(
             imid=request.json["imid"],
             url=request.json["url"],
@@ -143,6 +149,11 @@ class ImageItem(Resource):
             validate(request.json, Image.get_schema())
         except ValidationError as e:
             return create_error_response(400, "Invalid JSON document", str(e))
+
+        try:
+            request.json["date"]
+        except KeyError:
+            request.json["date"] = image.date
 
         image.imid = request.json["imid"]
         image.url = request.json["url"]

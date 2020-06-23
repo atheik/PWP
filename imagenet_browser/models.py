@@ -60,7 +60,7 @@ class Image(db.Model):
     def get_schema():
         schema = {
             "type": "object",
-            "required": ["imid", "url", "date"]
+            "required": ["imid", "url"]
         }
         props = schema["properties"] = {}
         props["imid"] = {
