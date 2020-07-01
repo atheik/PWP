@@ -16,7 +16,7 @@ class Synset(db.Model):
     words = db.Column(db.String(256), nullable=False)
     gloss = db.Column(db.String(512), nullable=False)
 
-    image = db.relationship("Image", back_populates="synset")
+    images = db.relationship("Image", back_populates="synset", cascade="all, delete-orphan")
     hyponyms = db.relationship(
         "Synset",
         secondary=hyponyms,
@@ -52,11 +52,11 @@ class Synset(db.Model):
 
 class Image(db.Model):
     synset_wnid = db.Column(db.Integer, db.ForeignKey("synset.wnid"), primary_key=True)
-    imid = db.Column(db.Integer, nullable=False, primary_key=True)
+    imid = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=False)
     url = db.Column(db.String(512), nullable=False)
-    date = db.Column(db.String(), nullable=False)
+    date = db.Column(db.String(), nullable=True)
 
-    synset = db.relationship("Synset", back_populates="image")
+    synset = db.relationship("Synset", back_populates="images")
 
     @staticmethod
     def get_schema():

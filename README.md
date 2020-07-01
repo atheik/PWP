@@ -5,7 +5,7 @@
 This project uses the Flask API project layout introduced here:  
 https://lovelace.oulu.fi/ohjelmoitava-web/ohjelmoitava-web/flask-api-project-layout/
 
-## Setup
+## Setup in development configuration
 
 Download the Cygwin installer:  
 https://cygwin.com/setup-x86_64.exe
@@ -45,13 +45,19 @@ head -100000 fall11_urls.txt.full > fall11_urls.txt
 ```sh
 export FLASK_APP=imagenet_browser
 export FLASK_ENV=development
-flask init-db # skip since instance/development.db is already populated
-flask load-db # skip since instance/development.db is already populated
+flask init-db # skip since instance/development.db is already populated; takes a while
+flask load-db # skip since instance/development.db is already populated; takes a while
 flask run
 ```
 
 The entry point is at:  
 http://localhost:5000/api/
+
+## Testing
+
+```sh
+pytest
+```
 
 # Group information
 
