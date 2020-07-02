@@ -15,8 +15,8 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 hyponyms = db.Table(
     "hyponyms",
-    db.Column("synset_wnid", db.Integer, db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
-    db.Column("synset_hyponym_wnid", db.Integer, db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    db.Column("synset_wnid", db.String(9), db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True),
+    db.Column("synset_hyponym_wnid", db.String(9), db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
 )
 
 class Synset(db.Model):
@@ -59,7 +59,7 @@ class Synset(db.Model):
 
 
 class Image(db.Model):
-    synset_wnid = db.Column(db.Integer, db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    synset_wnid = db.Column(db.String(9), db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     imid = db.Column(db.Integer, primary_key=True, autoincrement=False)
     url = db.Column(db.String(512), nullable=False)
     date = db.Column(db.String(), nullable=True)
