@@ -119,7 +119,7 @@ class ImagenetBrowserBuilder(MasonBuilder):
     def add_control_add_image(self):
         self.add_control(
             "imagenet_browser:add_image",
-            url_for("api.imagecollection"),
+            url_for("api.synsetimagecollection"),
             method="POST",
             encoding="json",
             title="Add a new image",
