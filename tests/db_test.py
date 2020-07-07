@@ -80,8 +80,6 @@ def test_image_ondelete_synset(app):
         db.session.add(synset_image)
         db.session.commit()
 
-        # TODO CASCADE does not work here?
-
         db_synset = Synset.query.filter_by(wnid="n02103406").first()
         db.session.delete(db_synset)
         db.session.commit()
@@ -97,13 +95,11 @@ def test_image_onupdate_synset(app):
         db.session.add(synset_image)
         db.session.commit()
 
-        # TODO CASCADE does not work here?
-
         db_synset = Synset.query.filter_by(wnid="n02103406").first()
         db_synset.wnid = "n00000000"
         db.session.commit()
 
-        db_synset_image = Image.query.filter(Image.synset_wnid == "n02103406", Image.imid == 9).first()
+        db_synset_image = Image.query.filter(Image.synset_wnid == "n00000000", Image.imid == 9).first()
         assert db_synset_image.synset_wnid == db_synset.wnid
 
 def test_synset_ondelete_synset(app):
@@ -115,8 +111,6 @@ def test_synset_ondelete_synset(app):
         db.session.add(synset)
         db.session.add(synset_hyponym)
         db.session.commit()
-
-        # TODO CASCADE does not work here?
 
         db_synset_hyponym = Synset.query.filter_by(wnid="n02109047").first()
         db.session.delete(db_synset_hyponym)
@@ -134,8 +128,6 @@ def test_synset_onupdate_synset(app):
         db.session.add(synset)
         db.session.add(synset_hyponym)
         db.session.commit()
-
-        # TODO CASCADE does not work here?
 
         db_synset_hyponym = Synset.query.filter_by(wnid="n02109047").first()
         db_synset_hyponym.wnid = "n00000000"
