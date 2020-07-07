@@ -82,12 +82,14 @@ class Image(db.Model):
 
 @click.command("init-db")
 @with_appcontext
-def init_db_command():
+def init_db_command(): # pragma: no cover
+
     db.create_all()
 
 @click.command("load-db")
 @with_appcontext
-def load_db_command():
+def load_db_command(): # pragma: no cover
+
     with open(DB_LOAD_DIR + "words.txt", "r") as words_file, open(DB_LOAD_DIR + "gloss.txt", "r") as gloss_file:
         for words_line, gloss_line in zip(words_file, gloss_file):
             wnid_first, words = words_line.split(sep="\t", maxsplit=1)
