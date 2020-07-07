@@ -85,6 +85,7 @@ class ImagenetBrowserBuilder(MasonBuilder):
             "edit",
             url_for("api.synsetitem", wnid=wnid),
             method="PUT",
+            encoding="json",
             title="Edit this synset",
             schema=Synset.get_schema()
         )
@@ -102,6 +103,7 @@ class ImagenetBrowserBuilder(MasonBuilder):
             "imagenet_browser:add_hyponym",
             url_for("api.synsethyponymcollection", wnid=wnid),
             method="POST",
+            encoding="json",
             title="Add a new hyponym",
             schema=Synset.get_schema(wnid_only=True)
         )

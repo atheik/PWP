@@ -2,16 +2,8 @@ from datetime import datetime
 from random import randint
 import click
 from flask.cli import with_appcontext
-from sqlalchemy.engine import Engine
-from sqlalchemy import event
 from imagenet_browser import db
 from imagenet_browser.constants import *
-
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    cursor = dbapi_connection.cursor()
-    cursor.execute("PRAGMA foreign_keys=ON")
-    cursor.close()
 
 hyponyms = db.Table(
     "hyponyms",

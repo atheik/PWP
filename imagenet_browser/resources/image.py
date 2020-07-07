@@ -193,7 +193,6 @@ class ImageCollection(Resource):
         
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.imagecollection"))
-        body.add_control_add_image()
 
         try:
             start = request.args.get("start", default=0, type=int)

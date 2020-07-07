@@ -10,8 +10,9 @@ setup(
         "flask",
         "flask-restful",
         "flask-sqlalchemy",
-        "SQLAlchemy",
+        "sqlalchemy",
         "jsonschema",
+        "requests",
         "pytest",
         "pytest-cov"
     ]
