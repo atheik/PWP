@@ -33,7 +33,7 @@ class SynsetImageCollection(Resource):
 
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.synsetimagecollection", wnid=wnid) + "?start={}".format(start))
-        body.add_control_add_image()
+        body.add_control_add_image(wnid=wnid)
 
         images = Image.query.filter(Image.synset_wnid == wnid).order_by(Image.imid).offset(start)
 

@@ -116,10 +116,10 @@ class ImagenetBrowserBuilder(MasonBuilder):
             title="Delete this hyponym"
         )
 
-    def add_control_add_image(self):
+    def add_control_add_image(self, wnid):
         self.add_control(
             "imagenet_browser:add_image",
-            url_for("api.synsetimagecollection"),
+            url_for("api.synsetimagecollection", wnid=wnid),
             method="POST",
             encoding="json",
             title="Add a new image",
