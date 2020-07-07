@@ -56,7 +56,7 @@ http://localhost:5000/api/
 ## Testing
 
 ```sh
-pytest
+pytest --cov=imagenet_browser --cov-report=term-missing
 ```
 
 # Group information
