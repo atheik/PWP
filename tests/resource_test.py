@@ -54,8 +54,7 @@ def _get_synset_json(hyponym_to_be=False):
     
     if hyponym_to_be:
         return {"wnid": "n02109391", "words": "hearing dog", "gloss": "dog trained to assist the deaf by signaling the occurrence of certain sounds"}
-    else:
-        return {"wnid": "n02121620", "words": "cat, true cat", "gloss": "feline mammal usually having thick soft fur and no ability to roar: domestic cats; wildcats"}
+    return {"wnid": "n02121620", "words": "cat, true cat", "gloss": "feline mammal usually having thick soft fur and no ability to roar: domestic cats; wildcats"}
 
 def _get_image_json():
 
@@ -82,7 +81,7 @@ def _check_control_delete_method(ctrl, client, obj):
     resp = client.delete(href)
     assert resp.status_code == 204
     
-def _check_control_put_method(ctrl, client, obj, json_body=_get_synset_json()):
+def _check_control_put_method(ctrl, client, obj, valid_json=_get_synset_json()):
     
     method = obj["@controls"][ctrl]["method"]
     assert method.lower() == "put"
@@ -91,13 +90,13 @@ def _check_control_put_method(ctrl, client, obj, json_body=_get_synset_json()):
     assert encoding.lower() == "json"
 
     schema = obj["@controls"][ctrl]["schema"]
-    validate(json_body, schema)
+    validate(valid_json, schema)
 
     href = obj["@controls"][ctrl]["href"]
-    resp = client.put(href, json=json_body)
+    resp = client.put(href, json=valid_json)
     assert resp.status_code == 204
     
-def _check_control_post_method(ctrl, client, obj, json_body=_get_synset_json()):
+def _check_control_post_method(ctrl, client, obj, valid_json=_get_synset_json()):
     
     method = obj["@controls"][ctrl]["method"]
     assert method.lower() == "post"
@@ -106,10 +105,10 @@ def _check_control_post_method(ctrl, client, obj, json_body=_get_synset_json()):
     assert encoding.lower() == "json"
 
     schema = obj["@controls"][ctrl]["schema"]
-    validate(json_body, schema)
+    validate(valid_json, schema)
 
     href = obj["@controls"][ctrl]["href"]
-    resp = client.post(href, json=json_body)
+    resp = client.post(href, json=valid_json)
     assert resp.status_code == 201
 
 
@@ -167,6 +166,7 @@ class TestSynsetItem(object):
         _check_control_get_method("profile", client, body)
         _check_control_get_method("collection", client, body)
         _check_control_put_method("edit", client, body)
+        # TODO broken
         _check_control_delete_method("imagenet_browser:delete", client, body)
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
@@ -216,7 +216,7 @@ class TestSynsetHyponymCollection(object):
 
         body = json.loads(resp.data)
         _check_namespace(client, body)
-        _check_control_post_method("imagenet_browser:add_hyponym", client, body)
+        _check_control_post_method("imagenet_browser:add_hyponym", client, body, valid_json=_get_synset_json(hyponym_to_be=True))
         assert len(body["items"]) == 1
         for item in body["items"]:
             _check_control_get_method("self", client, item)
@@ -285,8 +285,8 @@ class TestSynsetImageCollection(object):
 
         body = json.loads(resp.data)
         _check_namespace(client, body)
-        _check_control_post_method("imagenet_browser:add_image", client, body, json_body=_get_image_json())
-        assert len(body["items"]) == 1
+        _check_control_post_method("imagenet_browser:add_image", client, body, valid_json=_get_image_json())
+        assert len(body["items"]) == 2
         for item in body["items"]:
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
@@ -327,7 +327,8 @@ class TestSynsetImageItem(object):
         _check_namespace(client, body)
         _check_control_get_method("profile", client, body)
         _check_control_get_method("collection", client, body)
-        _check_control_put_method("edit", client, body, json_body=_get_image_json())
+        _check_control_put_method("edit", client, body, valid_json=_get_image_json())
+        # TODO broken
         _check_control_delete_method("imagenet_browser:delete", client, body)
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
