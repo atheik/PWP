@@ -114,6 +114,16 @@ def _check_control_post_method(ctrl, client, obj, valid_json=_get_synset_json())
     assert resp.status_code == 201
 
 
+class TestEntryPoint(object):
+    
+    RESOURCE_URL = "/api/"
+
+    def test_get(self, client):
+
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+
+
 class TestSynsetCollection(object):
     
     RESOURCE_URL = "/api/synsets/"
@@ -212,6 +222,7 @@ class TestSynsetItem(object):
 class TestSynsetHyponymCollection(object):
     
     RESOURCE_URL = "/api/synsets/n02103406/hyponyms/"
+    INVALID_URL = "/api/synsets/n00000000/hyponyms/"
 
     def test_get(self, client):
 
@@ -225,6 +236,9 @@ class TestSynsetHyponymCollection(object):
         for item in body["items"]:
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
+
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
 
     def test_post(self, client):
 
@@ -246,6 +260,9 @@ class TestSynsetHyponymCollection(object):
         del valid["wnid"]
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
+
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
         
         
 class TestSynsetHyponymItem(object):
@@ -282,6 +299,7 @@ class TestSynsetHyponymItem(object):
 class TestSynsetImageCollection(object):
     
     RESOURCE_URL = "/api/synsets/n02103406/images/"
+    INVALID_URL = "/api/synsets/n00000000/images/"
 
     def test_get(self, client):
 
@@ -295,6 +313,9 @@ class TestSynsetImageCollection(object):
         for item in body["items"]:
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
+
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
 
     def test_post(self, client):
 
@@ -316,6 +337,9 @@ class TestSynsetImageCollection(object):
         del valid["imid"]
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
+
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
         
         
 class TestSynsetImageItem(object):

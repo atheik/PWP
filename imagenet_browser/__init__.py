@@ -24,7 +24,7 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
-    if test_config is None:
+    if not test_config: # pragma: no cover
         app.config.from_pyfile("config.py", silent=True)
     else:
         app.config.from_mapping(test_config)
