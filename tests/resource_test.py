@@ -256,12 +256,16 @@ class TestSynsetHyponymCollection(object):
         
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 409
+
+        valid["wnid"] = "n00000000"
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 404
         
         del valid["wnid"]
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
 
-        resp = client.get(self.INVALID_URL)
+        resp = client.post(self.INVALID_URL, json=valid)
         assert resp.status_code == 404
         
         
@@ -269,6 +273,7 @@ class TestSynsetHyponymItem(object):
     
     RESOURCE_URL = "/api/synsets/n02103406/hyponyms/n02109047/"
     INVALID_URL = "/api/synsets/n02103406/hyponyms/n00000000/"
+    INVALID_URL_ALT = "/api/synsets/n00000000/hyponyms/n00000000/"
     
     def test_get(self, client):
 
@@ -284,6 +289,9 @@ class TestSynsetHyponymItem(object):
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
+        resp = client.get(self.INVALID_URL_ALT)
+        assert resp.status_code == 404
+
     def test_delete(self, client):
 
         resp = client.delete(self.RESOURCE_URL)
@@ -293,6 +301,9 @@ class TestSynsetHyponymItem(object):
         assert resp.status_code == 404
 
         resp = client.delete(self.INVALID_URL)
+        assert resp.status_code == 404
+
+        resp = client.delete(self.INVALID_URL_ALT)
         assert resp.status_code == 404
 
 
@@ -338,7 +349,7 @@ class TestSynsetImageCollection(object):
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
 
-        resp = client.get(self.INVALID_URL)
+        resp = client.post(self.INVALID_URL, json=valid)
         assert resp.status_code == 404
         
         
