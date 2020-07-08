@@ -95,6 +95,8 @@ def _check_control_put_method(ctrl, client, obj, valid_json=_get_synset_json()):
     href = obj["@controls"][ctrl]["href"]
     resp = client.put(href, json=valid_json)
     assert resp.status_code == 204
+
+    obj.update(valid_json)
     
 def _check_control_post_method(ctrl, client, obj, valid_json=_get_synset_json()):
     
@@ -155,7 +157,7 @@ class TestSynsetItem(object):
     
     RESOURCE_URL = "/api/synsets/n02103406/"
     INVALID_URL = "/api/synsets/n00000000/"
-    
+
     def test_get(self, client):
 
         resp = client.get(self.RESOURCE_URL)
@@ -166,8 +168,10 @@ class TestSynsetItem(object):
         _check_control_get_method("profile", client, body)
         _check_control_get_method("collection", client, body)
         _check_control_put_method("edit", client, body)
-        # TODO broken
+        resp = client.get(self.RESOURCE_URL.replace("/n02103406/", "/" + body["wnid"] + "/"))
+        body = json.loads(resp.data)
         _check_control_delete_method("imagenet_browser:delete", client, body)
+
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
@@ -259,6 +263,7 @@ class TestSynsetHyponymItem(object):
         _check_control_get_method("profile", client, body)
         _check_control_get_method("collection", client, body)
         _check_control_delete_method("imagenet_browser:delete", client, body)
+
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
@@ -328,8 +333,10 @@ class TestSynsetImageItem(object):
         _check_control_get_method("profile", client, body)
         _check_control_get_method("collection", client, body)
         _check_control_put_method("edit", client, body, valid_json=_get_image_json())
-        # TODO broken
+        resp = client.get(self.RESOURCE_URL.replace("/9/", "/" + str(body["imid"]) + "/"))
+        body = json.loads(resp.data)
         _check_control_delete_method("imagenet_browser:delete", client, body)
+
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
