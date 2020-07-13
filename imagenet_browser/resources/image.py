@@ -12,14 +12,6 @@ from imagenet_browser.constants import *
 class SynsetImageCollection(Resource):
 
     def get(self, wnid):
-        synset = Synset.query.filter_by(wnid=wnid).first()
-        if not synset:
-            return create_error_response(
-                404,
-                "Not found",
-                "No synset with WordNet ID of '{}' found".format(wnid)
-            )
-
         try:
             start = request.args.get("start", default=0, type=int)
         except ValueError:
@@ -27,6 +19,14 @@ class SynsetImageCollection(Resource):
                 400,
                 "Invalid query parameter",
                 "Query parameter 'start' must be an integer"
+            )
+
+        synset = Synset.query.filter_by(wnid=wnid).first()
+        if not synset:
+            return create_error_response(
+                404,
+                "Not found",
+                "No synset with WordNet ID of '{}' found".format(wnid)
             )
 
         body = ImagenetBrowserBuilder()

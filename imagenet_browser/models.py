@@ -33,18 +33,18 @@ class Synset(db.Model):
         }
         props = schema["properties"] = {}
         props["wnid"] = {
-            "description": "The WordNet ID unique to the synset; nouns only",
+            "description": "The WordNet ID of the synset denoted by the letter n (only nouns) followed by 8 digits",
             "type": "string",
             "pattern": "^n[0-9]{8}$"
         }
         if not wnid_only:
             schema["required"].extend(["words", "gloss"])
             props["words"] = {
-                "description": "The words of the synset; rough synonyms",
+                "description": "The words of the synset denoting its rough synonyms",
                 "type": "string"
             }
             props["gloss"] = {
-                "description": "The gloss of the synset; a brief definition",
+                "description": "The gloss or brief definition of the synset",
                 "type": "string"
             }
         return schema
@@ -64,16 +64,16 @@ class Image(db.Model):
         }
         props = schema["properties"] = {}
         props["imid"] = {
-            "description": "The ID of the image",
+            "description": "The numerical ID of the image",
             "type": "integer",
         }
         props["url"] = {
-            "description": "The URL of the image; HTTP only",
+            "description": "The URL of the image with its scheme being HTTP or HTTPS only",
             "type": "string",
             "pattern": "^https?://"
         }
         props["date"] = {
-            "description": "The date of the last access to the image through the URL; ISO 8601",
+            "description": "The last seen date of the image through the URL in ISO 8601 format",
             "type": "string",
             "pattern": "^(199[1-9]|2[0-9]{3})-(0*([1-9]|1[0-2]))-(0*([1-9]|[12][0-9]|3[01]))$"
         }

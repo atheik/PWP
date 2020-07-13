@@ -45,8 +45,8 @@ head -100000 fall11_urls.txt.full > fall11_urls.txt
 ```sh
 export FLASK_APP=imagenet_browser
 export FLASK_ENV=development
-flask init-db # skip since instance/development.db is already populated; takes a while
-flask load-db # skip since instance/development.db is already populated; takes a while
+flask init-db
+flask load-db # you can skip this since instance/development.db is already populated
 flask run
 ```
 

@@ -72,7 +72,7 @@ class SynsetCollection(Resource):
             return create_error_response(
                 409,
                 "Already exists",
-                "Synset with WordNet ID of '{}' already exists.".format(request.json["wnid"])
+                "Synset with WordNet ID of '{}' already exists".format(request.json["wnid"])
             )
 
         return Response(status=201, headers={
@@ -101,8 +101,8 @@ class SynsetItem(Resource):
         body.add_control("collection", url_for("api.synsetcollection"))
         body.add_control_edit_synset(wnid=wnid)
         body.add_control_delete_synset(wnid=wnid)
-        body.add_control("imagenet_browser:synsetimagecollection", url_for("api.synsetimagecollection", wnid=wnid))
         body.add_control("imagenet_browser:synsethyponymcollection", url_for("api.synsethyponymcollection", wnid=wnid))
+        body.add_control("imagenet_browser:synsetimagecollection", url_for("api.synsetimagecollection", wnid=wnid))
 
         return Response(json.dumps(body), 200, mimetype=MASON)
 
@@ -137,7 +137,7 @@ class SynsetItem(Resource):
             return create_error_response(
                 409,
                 "Already exists", 
-                "Synset with WordNet ID of '{}' already exists.".format(request.json["wnid"])
+                "Synset with WordNet ID of '{}' already exists".format(request.json["wnid"])
             )
 
         return Response(status=204)
