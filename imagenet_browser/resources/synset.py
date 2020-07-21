@@ -185,6 +185,7 @@ class SynsetHyponymCollection(Resource):
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.synsethyponymcollection", wnid=wnid) + "?start={}".format(start))
         body.add_control_add_hyponym(wnid=wnid)
+        body.add_control("imagenet_browser:synsetitem", url_for("api.synsetitem", wnid=wnid))
 
         synset_hyponyms = synset.hyponyms[start:]
 

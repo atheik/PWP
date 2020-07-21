@@ -34,6 +34,7 @@ class SynsetImageCollection(Resource):
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)
         body.add_control("self", url_for("api.synsetimagecollection", wnid=wnid) + "?start={}".format(start))
         body.add_control_add_image(wnid=wnid)
+        body.add_control("imagenet_browser:synsetitem", url_for("api.synsetitem", wnid=wnid))
 
         images = Image.query.filter(Image.synset_wnid == wnid).order_by(Image.imid).offset(start)
 
