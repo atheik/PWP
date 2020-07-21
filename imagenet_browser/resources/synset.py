@@ -201,7 +201,7 @@ class SynsetHyponymCollection(Resource):
                 words=synset_hyponym.words,
                 gloss=synset_hyponym.gloss
             )
-            item.add_control("self", url_for("api.synsetitem", wnid=synset_hyponym.wnid))
+            item.add_control("self", url_for("api.synsethyponymitem", wnid=synset_hyponym.wnid))
             item.add_control("profile", SYNSET_PROFILE)
             body["items"].append(item)
 
