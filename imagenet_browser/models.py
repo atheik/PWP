@@ -54,7 +54,7 @@ class Image(db.Model):
     synset_wnid = db.Column(db.String(9), db.ForeignKey("synset.wnid", onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     imid = db.Column(db.Integer, primary_key=True, autoincrement=False)
     url = db.Column(db.String(512), nullable=False)
-    date = db.Column(db.String(), nullable=True)
+    date = db.Column(db.String(10), nullable=True)
 
     @staticmethod
     def get_schema():
