@@ -127,6 +127,7 @@ class SynsetImageItem(Resource):
         body.add_control("collection", url_for("api.synsetimagecollection", wnid=wnid))
         body.add_control_edit_image(wnid=wnid, imid=imid)
         body.add_control_delete_image(wnid=wnid, imid=imid)
+        body.add_control("imagecollection", url_for("api.imagecollection"))
 
         return Response(json.dumps(body), 200, mimetype=MASON)
 
