@@ -13,7 +13,7 @@ class SynsetImageCollection(Resource):
 
     def get(self, wnid):
         try:
-            start = request.args.get("start", default=0, type=int)
+            start = int(request.args.get("start", default=0))
         except ValueError:
             return create_error_response(
                 400,
@@ -195,7 +195,7 @@ class ImageCollection(Resource):
         body.add_control("self", url_for("api.imagecollection"))
 
         try:
-            start = request.args.get("start", default=0, type=int)
+            start = int(request.args.get("start", default=0))
         except ValueError:
             return create_error_response(
                 400,

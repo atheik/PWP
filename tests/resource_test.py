@@ -141,6 +141,9 @@ class TestSynsetCollection(object):
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
 
+        resp = client.get(self.RESOURCE_URL + "?start=first")
+        assert resp.status_code == 400
+
     def test_post(self, client):
 
         valid = _get_synset_json()
@@ -237,6 +240,9 @@ class TestSynsetHyponymCollection(object):
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
 
+        resp = client.get(self.RESOURCE_URL + "?start=first")
+        assert resp.status_code == 400
+
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
@@ -324,6 +330,9 @@ class TestSynsetImageCollection(object):
         for item in body["items"]:
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
+
+        resp = client.get(self.RESOURCE_URL + "?start=first")
+        assert resp.status_code == 400
 
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
@@ -424,3 +433,6 @@ class TestImageCollection(object):
         for item in body["items"]:
             _check_control_get_method("self", client, item)
             _check_control_get_method("profile", client, item)
+
+        resp = client.get(self.RESOURCE_URL + "?start=first")
+        assert resp.status_code == 400
