@@ -30,6 +30,8 @@ pip3.7 install -r requirements.txt
 ```
 
 ```sh
+# instance/development.db is already populated and distributed in the repository
+# the following ImageNet files are utilized for populating the initial database
 wget http://www.image-net.org/archive/words.txt \
      http://www.image-net.org/archive/gloss.txt \
      http://www.image-net.org/archive/wordnet.is_a.txt \
@@ -37,6 +39,7 @@ wget http://www.image-net.org/archive/words.txt \
 ```
 
 ```sh
+# only the first 100000 images are used due to repository storage considerations
 tar xf imagenet_fall11_urls.tgz
 mv fall11_urls.txt{,.full}
 head -100000 fall11_urls.txt.full > fall11_urls.txt
@@ -45,8 +48,7 @@ head -100000 fall11_urls.txt.full > fall11_urls.txt
 ```sh
 export FLASK_APP=imagenet_browser
 export FLASK_ENV=development
-flask init-db
-flask load-db # you can skip this since instance/development.db is already populated
+flask init-db && flask load-db # remove instance/development.db first if you wish to run this command
 flask run
 ```
 
@@ -55,8 +57,18 @@ http://localhost:5000/api/
 
 ## Testing
 
+Make sure your environment is setup as above.
+
 ```sh
 pytest --cov=imagenet_browser --cov-report=term-missing
+```
+
+## Client
+
+Remember to run the server in another terminal.
+
+```sh
+python3.7 client.py
 ```
 
 # Group information
