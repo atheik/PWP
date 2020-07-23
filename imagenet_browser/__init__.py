@@ -44,11 +44,11 @@ def create_app(test_config=None):
 
     @app.route(LINK_RELATIONS_URL)
     def send_link_relations():
-        return "link relations"
+        return "For link relations, refer to https://imagenetbrowser.docs.apiary.io/#reference/link-relations"
 
     @app.route("/profiles/<profile>/")
     def send_profile(profile):
-        return "{} profile".format(profile)
+        return "For {} profile, refer to https://imagenetbrowser.docs.apiary.io/#reference/profiles".format(profile)
 
     from . import utils
 

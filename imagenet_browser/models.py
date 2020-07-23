@@ -108,8 +108,6 @@ def load_db_command(): # pragma: no cover
             db.session.add(synset)
         db.session.commit()
 
-    # TODO poor performance
-
     with open(DB_LOAD_DIR + "fall11_urls.txt", "r", encoding="iso-8859-1") as urls_file:
         wnid_old = None
         for urls_line in urls_file:
@@ -130,8 +128,6 @@ def load_db_command(): # pragma: no cover
             )
             db.session.add(image)
         db.session.commit()
-
-    # TODO poor performance
 
     with open(DB_LOAD_DIR + "wordnet.is_a.txt", "r") as hyponyms_file:
         wnid_old = None
