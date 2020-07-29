@@ -2,7 +2,7 @@
 
 # ImageNet Browser
 
-This project uses the Flask API project layout introduced here:  
+This project uses the example Flask API project layout introduced here:  
 https://lovelace.oulu.fi/ohjelmoitava-web/ohjelmoitava-web/flask-api-project-layout/
 
 ## Setup in development configuration
@@ -58,6 +58,7 @@ http://localhost:5000/api/
 ## Testing
 
 Make sure your environment is setup as above.
+The coverage reported for the database and resource tests should be 98%.
 
 ```sh
 pytest --cov=imagenet_browser --cov-report=term-missing

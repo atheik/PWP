@@ -10,6 +10,9 @@ db = SQLAlchemy()
 
 @event.listens_for(Engine, "connect")
 def set_sqlite_pragma(dbapi_connection, connection_record):
+    """
+    Enable SQLite foreign keys.
+    """
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
@@ -17,6 +20,14 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 # Based on http://flask.pocoo.org/docs/1.0/tutorial/factory/#the-application-factory
 # Modified to use Flask SQLAlchemy
 def create_app(test_config=None):
+    """
+    The application factory.
+    Create and initialize the Flask application using either the passed configuration or 'config.py' if available.
+    Register Click commands for 'flask' command line invocation used for initial database creation and loading.
+    Register a blueprint for view grouping.
+    Register link relations, profile, and entry point views.
+    Return the application.
+    """
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY="dev",
@@ -44,16 +55,28 @@ def create_app(test_config=None):
 
     @app.route(LINK_RELATIONS_URL)
     def send_link_relations():
+        """
+        The route's view function listening for GET.
+        Return a plain text description of where to find link relations.
+        """
         return "For link relations, refer to https://imagenetbrowser.docs.apiary.io/#reference/link-relations"
 
     @app.route("/profiles/<profile>/")
     def send_profile(profile):
-        return "For {} profile, refer to https://imagenetbrowser.docs.apiary.io/#reference/profiles".format(profile)
+        """
+        The route's view function listening for GET.
+        Return a plain text description of where to find profile information.
+        """
+        return "For profiles, refer to https://imagenetbrowser.docs.apiary.io/#reference/profiles"
 
     from . import utils
 
     @app.route("/api/")
     def entry_point():
+        """
+        The route's view function listening for GET.
+        Build and return the hypermedia response for the entry point.
+        """
         body = utils.ImagenetBrowserBuilder()
 
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)

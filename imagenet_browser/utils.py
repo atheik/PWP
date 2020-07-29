@@ -69,8 +69,14 @@ class MasonBuilder(dict):
 
 
 class ImagenetBrowserBuilder(MasonBuilder):
+    """
+    Subclass of MasonBuilder used for building hypermedia responses that use controls specific to ImageNet Browser.
+    """
 
     def add_control_add_synset(self):
+        """
+        Add the imagenet_browser:add_synset control for SynsetCollection to the hypermedia response.
+        """
         self.add_control(
             "imagenet_browser:add_synset",
             url_for("api.synsetcollection"),
@@ -81,6 +87,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_edit_synset(self, wnid):
+        """
+        Add the edit control for SynsetItem to the hypermedia response.
+        """
         self.add_control(
             "edit",
             url_for("api.synsetitem", wnid=wnid),
@@ -91,6 +100,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_delete_synset(self, wnid):
+        """
+        Add the imagenet_browser:delete control for SynsetItem to the hypermedia response.
+        """
         self.add_control(
             "imagenet_browser:delete",
             url_for("api.synsetitem", wnid=wnid),
@@ -99,6 +111,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_add_hyponym(self, wnid):
+        """
+        Add the imagenet_browser:add_hyponym control for SynsetHyponymCollection to the hypermedia response.
+        """
         self.add_control(
             "imagenet_browser:add_hyponym",
             url_for("api.synsethyponymcollection", wnid=wnid),
@@ -109,6 +124,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_delete_hyponym(self, wnid, hyponym_wnid):
+        """
+        Add the imagenet_browser:delete control for SynsetHyponymItem to the hypermedia response.
+        """
         self.add_control(
             "imagenet_browser:delete",
             url_for("api.synsethyponymitem", wnid=wnid, hyponym_wnid=hyponym_wnid),
@@ -117,6 +135,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_add_image(self, wnid):
+        """
+        Add the imagenet_browser:add_image control for SynsetImageCollection to the hypermedia response.
+        """
         self.add_control(
             "imagenet_browser:add_image",
             url_for("api.synsetimagecollection", wnid=wnid),
@@ -127,6 +148,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_edit_image(self, wnid, imid):
+        """
+        Add the edit control for SynsetImageItem to the hypermedia response.
+        """
         self.add_control(
             "edit",
             url_for("api.synsetimageitem", wnid=wnid, imid=imid),
@@ -137,6 +161,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
     def add_control_delete_image(self, wnid, imid):
+        """
+        Add the imagenet_browser:delete control for SynsetImageItem to the hypermedia response.
+        """
         self.add_control(
             "imagenet_browser:delete",
             url_for("api.synsetimageitem", wnid=wnid, imid=imid),
@@ -145,6 +172,9 @@ class ImagenetBrowserBuilder(MasonBuilder):
         )
 
 def create_error_response(status_code, title, message=None):
+    """
+    Build a Mason error message with a title and a message further describing the problem.
+    """
     resource_url = request.path
     body = MasonBuilder(resource_url=resource_url)
     body.add_error(title, message)

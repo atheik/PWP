@@ -1,3 +1,6 @@
+"""
+Constants used throughout the project.
+"""
 DB_LOAD_DIR = "./"
 SYNSET_PAGE_SIZE = 50
 IMAGE_PAGE_SIZE = 50

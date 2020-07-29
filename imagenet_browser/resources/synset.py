@@ -9,8 +9,17 @@ from imagenet_browser.constants import *
 from imagenet_browser.utils import ImagenetBrowserBuilder, create_error_response
 
 class SynsetCollection(Resource):
+    """
+    Subclass of Resource that defines the HTTP method handlers for the SynsetCollection resource.
+    All synsets known to the API.
+    """
 
     def get(self):
+        """
+        Build and return a list of all synsets known to the API.
+        A list has SYNSET_PAGE_SIZE items with the starting index being controlled by the query parameter.
+        As such, the next and prev controls become available when appropriate.
+        """
         try:
             start = int(request.args.get("start", default=0))
         except ValueError:
@@ -47,6 +56,10 @@ class SynsetCollection(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self):
+        """
+        Add a new synset and return its location.
+        The synset representation must be valid against the synset schema.
+        """
         if not request.json:
             return create_error_response(
                 415,
@@ -80,8 +93,15 @@ class SynsetCollection(Resource):
         })
 
 class SynsetItem(Resource):
+    """
+    Subclass of Resource that defines the HTTP method handlers for the SynsetItem resource.
+    A synset identified by its WordNet ID.
+    """
 
     def get(self, wnid):
+        """
+        Build and return the synset representation.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -107,6 +127,10 @@ class SynsetItem(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def put(self, wnid):
+        """
+        Replace the synset representation with a new one.
+        Must validate against the synset schema.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -143,6 +167,9 @@ class SynsetItem(Resource):
         return Response(status=204)
 
     def delete(self, wnid):
+        """
+        Delete the synset and its associated images.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -158,8 +185,17 @@ class SynsetItem(Resource):
 
 
 class SynsetHyponymCollection(Resource):
+    """
+    Subclass of Resource that defines the HTTP method handlers for the SynsetHyponymCollection resource.
+    All hyponyms of a synset.
+    """
 
     def get(self, wnid):
+        """
+        Build and return a list of all hyponyms of the synset.
+        A list has SYNSET_PAGE_SIZE items with the starting index being controlled by the query parameter.
+        As such, the next and prev controls become available when appropriate.
+        """
         try:
             start = int(request.args.get("start", default=0))
         except ValueError:
@@ -208,6 +244,10 @@ class SynsetHyponymCollection(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self, wnid):
+        """
+        Add a new hyponym to the synset with the hyponym being a previously added synset and return its location.
+        The synset representation must be valid against a subset of the synset schema that only requires the WordNet ID.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -255,8 +295,15 @@ class SynsetHyponymCollection(Resource):
         })
 
 class SynsetHyponymItem(Resource):
+    """
+    Subclass of Resource that defines the HTTP method handlers for the SynsetHyponymItem resource.
+    A hyponym of a synset identified by its WordNet ID.
+    """
 
     def get(self, wnid, hyponym_wnid):
+        """
+        Build and return the hyponym representation.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -290,6 +337,9 @@ class SynsetHyponymItem(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def delete(self, wnid, hyponym_wnid):
+        """
+        Delete the hyponym.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(

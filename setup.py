@@ -1,3 +1,8 @@
+"""
+Setup script containing package information such as its name, version, and dependencies.
+The 'requirements.txt' file relies on this script to find dependencies.
+This scipt makes the project installable although installing it is neither needed nor tested.
+"""
 from setuptools import find_packages, setup
 
 setup(

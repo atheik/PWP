@@ -7,6 +7,9 @@ from imagenet_browser.resources.image import SynsetImageCollection, ImageCollect
 api_bp = Blueprint("api", __name__, url_prefix="/api")
 api = Api(api_bp)
 
+"""
+Add routes to the resource classes.
+"""
 api.add_resource(SynsetCollection, "/synsets/")
 api.add_resource(SynsetItem, "/synsets/<wnid>/")
 api.add_resource(SynsetHyponymCollection, "/synsets/<wnid>/hyponyms/")

@@ -10,8 +10,17 @@ from imagenet_browser.utils import ImagenetBrowserBuilder, create_error_response
 from imagenet_browser.constants import *
 
 class SynsetImageCollection(Resource):
+    """
+    Subclass of Resource that defines the HTTP method handlers for the SynsetImageCollection resource.
+    All images of a synset.
+    """
 
     def get(self, wnid):
+        """
+        Build and return a list of all images of the synset.
+        A list has IMAGE_PAGE_SIZE items with the starting index being controlled by the query parameter.
+        As such, the next and prev controls become available when appropriate.
+        """
         try:
             start = int(request.args.get("start", default=0))
         except ValueError:
@@ -57,6 +66,10 @@ class SynsetImageCollection(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def post(self, wnid):
+        """
+        Add a new image to the synset and return its location.
+        The image representation must be valid against the image schema.
+        """
         synset = Synset.query.filter_by(wnid=wnid).first()
         if not synset:
             return create_error_response(
@@ -106,8 +119,15 @@ class SynsetImageCollection(Resource):
         })
 
 class SynsetImageItem(Resource):
+    """
+    Subclass of Resource that defines the HTTP method handlers for the SynsetImageItem resource.
+    An image of a synset identified by its numerical ID.
+    """
 
     def get(self, wnid, imid):
+        """
+        Build and return the image representation.
+        """
         image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
         if not image:
             return create_error_response(
@@ -132,6 +152,10 @@ class SynsetImageItem(Resource):
         return Response(json.dumps(body), 200, mimetype=MASON)
 
     def put(self, wnid, imid):
+        """
+        Replace the image representation with a new one.
+        Must validate against the image schema.
+        """
         image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
         if not image:
             return create_error_response(
@@ -175,6 +199,9 @@ class SynsetImageItem(Resource):
         return Response(status=204)
 
     def delete(self, wnid, imid):
+        """
+        Delete the image.
+        """
         image = Image.query.filter(Image.synset_wnid == wnid, Image.imid == imid).first()
         if not image:
             return create_error_response(
@@ -189,6 +216,11 @@ class SynsetImageItem(Resource):
         return Response(status=204)
 
 class ImageCollection(Resource):
+    """
+    Build and return a list of all images known to the API.
+    A list has IMAGE_PAGE_SIZE items with the starting index being controlled by the query parameter.
+    As such, the next and prev controls become available when appropriate.
+    """
 
     def get(self):
         body = ImagenetBrowserBuilder()
