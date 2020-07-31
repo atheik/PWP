@@ -221,6 +221,7 @@ class ImageCollection(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the ImageCollection resource.
     Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
+    All images known to the API.
     """
 
     def get(self):
