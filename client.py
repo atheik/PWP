@@ -6,9 +6,9 @@ API_URL = "http://localhost:5000"
 
 def prompt_from_body(body):
     """
-    Print menu using contents from the request body.
+    Print menu using contents from the response body.
     Prompt to select from available collection items as well as actions and validate user input.
-    Return the appropriate control, depending on whether the resource is a collection or an item.
+    Return the appropriate control, depending on whether the resource corresponds to a collection or an item.
     """
     item_choices = 0
     try:
@@ -144,6 +144,17 @@ def handle_action(s, ctrl):
                 print("{:*^80}".format(" Ok response "))
 
 """
+The client main loop.
+GET the resource using the current href.
+Deserialize the response body, and if it is not JSON, like in the case of profiles, print plain text response.
+Print menu using contents from the body and prompt to select from available collection items as well as actions.
+With the selection associated control, handle the corresponding action.
+If the current href is different to the one in the control, update it and prev_href accordingly.
+As a generic hypermedia client, the functionality is dependent on correct and consistent hypermedia controls and the connectedness principle.
+As such, very little application state is needed to be upheld by the client, namely prev_href,
+as it is needed when href points to a resource that has become invalid due to the previous action modifying or deleting it.
+Viewing the API state diagram makes understanding the menu hierarchy quick:
+https://raw.githubusercontent.com/wiki/atheik/imagenet-browser/ImageNet_Browser_State.png
 """
 if __name__ == "__main__":
     try:
