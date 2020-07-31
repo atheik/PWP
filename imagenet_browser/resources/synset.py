@@ -11,6 +11,7 @@ from imagenet_browser.utils import ImagenetBrowserBuilder, create_error_response
 class SynsetCollection(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the SynsetCollection resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     All synsets known to the API.
     """
 
@@ -57,7 +58,7 @@ class SynsetCollection(Resource):
 
     def post(self):
         """
-        Add a new synset and return its location.
+        Add a new synset and return its location in the response headers.
         The synset representation must be valid against the synset schema.
         """
         if not request.json:
@@ -95,6 +96,7 @@ class SynsetCollection(Resource):
 class SynsetItem(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the SynsetItem resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     A synset identified by its WordNet ID.
     """
 
@@ -187,6 +189,7 @@ class SynsetItem(Resource):
 class SynsetHyponymCollection(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the SynsetHyponymCollection resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     All hyponyms of a synset.
     """
 
@@ -245,7 +248,7 @@ class SynsetHyponymCollection(Resource):
 
     def post(self, wnid):
         """
-        Add a new hyponym to the synset with the hyponym being a previously added synset and return its location.
+        Add a new hyponym to the synset with the hyponym being a previously added synset and return its location in the response headers.
         The synset representation must be valid against a subset of the synset schema that only requires the WordNet ID.
         """
         synset = Synset.query.filter_by(wnid=wnid).first()
@@ -297,6 +300,7 @@ class SynsetHyponymCollection(Resource):
 class SynsetHyponymItem(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the SynsetHyponymItem resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     A hyponym of a synset identified by its WordNet ID.
     """
 

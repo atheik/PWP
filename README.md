@@ -2,15 +2,17 @@
 
 # ImageNet Browser
 
-This project uses the example Flask API project layout introduced here:  
+This project uses the example Flask API project layout, the introduction to which can be found here:  
 https://lovelace.oulu.fi/ohjelmoitava-web/ohjelmoitava-web/flask-api-project-layout/
+
+Namely, the MasonBuilder class and create_error_response function in imagenet_browser/utils.py as well as the submit_data function in client.py, are from the course material as is.
 
 ## Setup in development configuration
 
 Download the Cygwin installer:  
 https://cygwin.com/setup-x86_64.exe
 
-Open a command prompt in the folder that you downloaded the Cygwin installer to and then issue the following command:
+Open a command prompt in the folder that you downloaded the Cygwin installer to and issue the following command:
 
 ```cmd
 setup-x86_64 -OP git,python37,python37-pip,wget -qs https://ftp.acc.umu.se/mirror/cygwin/
@@ -57,7 +59,7 @@ http://localhost:5000/api/
 
 ## Testing
 
-Make sure your environment is setup as above.
+Make sure your environment is setup as in the development configuration described above.  
 The coverage reported for the database and resource tests should be 98%.
 
 ```sh
@@ -66,6 +68,7 @@ pytest --cov=imagenet_browser --cov-report=term-missing
 
 ## Client
 
+Make sure your environment is setup as in the development configuration described above.  
 Remember to run the server in another terminal.
 
 ```sh

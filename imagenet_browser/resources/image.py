@@ -12,6 +12,7 @@ from imagenet_browser.constants import *
 class SynsetImageCollection(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the SynsetImageCollection resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     All images of a synset.
     """
 
@@ -67,7 +68,7 @@ class SynsetImageCollection(Resource):
 
     def post(self, wnid):
         """
-        Add a new image to the synset and return its location.
+        Add a new image to the synset and return its location in the response headers.
         The image representation must be valid against the image schema.
         """
         synset = Synset.query.filter_by(wnid=wnid).first()
@@ -121,6 +122,7 @@ class SynsetImageCollection(Resource):
 class SynsetImageItem(Resource):
     """
     Subclass of Resource that defines the HTTP method handlers for the SynsetImageItem resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     An image of a synset identified by its numerical ID.
     """
 
@@ -217,12 +219,16 @@ class SynsetImageItem(Resource):
 
 class ImageCollection(Resource):
     """
-    Build and return a list of all images known to the API.
-    A list has IMAGE_PAGE_SIZE items with the starting index being controlled by the query parameter.
-    As such, the next and prev controls become available when appropriate.
+    Subclass of Resource that defines the HTTP method handlers for the ImageCollection resource.
+    Error scenarios for the various methods are described in the calls to create_error_response, or alternatively, in the resource tests.
     """
 
     def get(self):
+        """
+        Build and return a list of all images known to the API.
+        A list has IMAGE_PAGE_SIZE items with the starting index being controlled by the query parameter.
+        As such, the next and prev controls become available when appropriate.
+        """
         body = ImagenetBrowserBuilder()
         
         body.add_namespace("imagenet_browser", LINK_RELATIONS_URL)

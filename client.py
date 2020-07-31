@@ -6,6 +6,9 @@ API_URL = "http://localhost:5000"
 
 def prompt_from_body(body):
     """
+    Print menu using contents from the request body.
+    Prompt to select from available collection items as well as actions and validate user input.
+    Return the appropriate control, depending on whether the resource is a collection or an item.
     """
     item_choices = 0
     try:
@@ -15,7 +18,8 @@ def prompt_from_body(body):
         props = body.copy()
         del props["@namespaces"]
         del props["@controls"]
-        print(props)
+        if props:
+            print(props)
     else:
         print("{:-^80}".format(" Collection "))
         for item in body["items"]:
@@ -34,7 +38,6 @@ def prompt_from_body(body):
     while pick < 1 or pick > choices:
         print("{:-^80}".format(" Prompt "))
         pick = input("Pick " + ("an item or " if item_choices else "") + "an action (number): ")
-
         try:
             pick = int(pick)
         except ValueError:
@@ -44,11 +47,12 @@ def prompt_from_body(body):
         ctrl = list(body["@controls"].values())[pick - item_choices - 1]
     else:
         ctrl = body["items"][pick - 1]["@controls"]["self"]
-
     return ctrl
 
 def prompt_from_schema(ctrl):
     """
+    Prompt to enter properties according to schema and validate user input.
+    Return the built request control and data.
     """
     schema = ctrl["schema"]
     properties = schema["properties"]
@@ -89,17 +93,23 @@ def prompt_from_schema(ctrl):
 
 def submit_data(s, ctrl, data):
     """
+    Send a PUT or POST request, depending on the control.
+    Request data is serialized to JSON and the Content-Type is set accordingly.
+    Return the response.
     """
     resp = s.request(
         ctrl["method"],
         API_URL + ctrl["href"],
         data=json.dumps(data),
-        headers={"Content-type": "application/json"}
+        headers={"Content-Type": "application/json"}
     )
     return resp
 
 def handle_action(s, ctrl):
     """
+    Derive request method from the control and perform the request.
+    With schema available, the method is assummed to be either PUT or POST and the user is prompted to input data.
+    On error, print the Mason error message.
     """
     try:
         ctrl["schema"]
@@ -133,8 +143,11 @@ def handle_action(s, ctrl):
             else:
                 print("{:*^80}".format(" Ok response "))
 
+"""
+"""
 if __name__ == "__main__":
     try:
+        print("Press the interrupt key (normally Control-C or Delete) to exit")
         with requests.Session() as s:
             href = prev_href = "/api/"
             while True:
