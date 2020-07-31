@@ -11,27 +11,35 @@ def prompt_from_schema(s, ctrl):
     properties = schema["properties"]
     required = schema["required"]
 
+    i = 0
     req_data = {}
-    for prop in required:
+    while i < len(properties):
+        prop = list(properties.keys())[i]
+
         print("{:-^80}".format(" Prompt "))
-        req_data[prop] = input(properties[prop]["description"] + ": ")
+        req_data[prop] = input(properties[prop]["description"] + " (" + ("required" if prop in required else "optional") + "): ")
 
-        prop_type = properties[prop]["type"]
-        if prop_type.lower() == "integer":
+        if req_data[prop]:
+            prop_type = properties[prop]["type"]
+            if prop_type.lower() == "integer":
+                try:
+                    req_data[prop] = int(req_data[prop])
+                except ValueError:
+                    continue
+
             try:
-                req_data[prop] = int(req_data[prop])
-            except ValueError:
-                required.insert(0, prop)
-                continue
-
-        try:
-            prop_pattern = properties[prop]["pattern"]
-        except KeyError:
-            pass
+                prop_pattern = properties[prop]["pattern"]
+            except KeyError:
+                pass
+            else:
+                if not match(prop_pattern, req_data[prop]):
+                    continue
+        elif prop in required:
+            continue
         else:
-            if not match(prop_pattern, req_data[prop]):
-                required.insert(0, prop)
-                continue
+            del req_data[prop]
+
+        i += 1
 
     req_ctrl = {"method": ctrl["method"], "href": ctrl["href"]}
     return req_ctrl, req_data
@@ -65,7 +73,7 @@ if __name__ == "__main__":
             try:
                 body = resp.json()
             except ValueError:
-                print("{:-^80}".format(" Text response "))
+                print("{:*^80}".format(" Text response "))
                 print(resp.text)
                 href = prev_href
                 continue
@@ -120,10 +128,10 @@ if __name__ == "__main__":
                     resp.raise_for_status()
                 except requests.HTTPError:
                     body = resp.json()
-                    print("{:=^80}".format(" Error response "))
+                    print("{:*^80}".format(" Error response "))
                     print(*body["@error"]["@messages"])
                 else:
-                    print("{:=^80}".format(" Ok response "))
+                    print("{:*^80}".format(" Ok response "))
 
             try:
                 ctrl["method"]
@@ -136,10 +144,10 @@ if __name__ == "__main__":
                         resp.raise_for_status()
                     except requests.HTTPError:
                         body = resp.json()
-                        print("{:=^80}".format(" Error response "))
+                        print("{:*^80}".format(" Error response "))
                         print(*body["@error"]["@messages"])
                     else:
-                        print("{:=^80}".format(" OK response "))
+                        print("{:*^80}".format(" OK response "))
 
             if href != ctrl["href"]:
                 prev_href = href
