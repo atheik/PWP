@@ -18,15 +18,18 @@ def prompt_from_body(body):
         props = body.copy()
         del props["@namespaces"]
         del props["@controls"]
-        if props:
-            print(props)
+        for prop in props.items():
+            print(prop[0] + ": " + prop[1])
     else:
         print("{:-^80}".format(" Collection "))
         for item in body["items"]:
             item_choices += 1
             item_props = item.copy()
             del item_props["@controls"]
-            print(item_choices, item_props)
+            item_props_list = list(item_props.items())
+            print(item_choices, item_props_list[0][0] + ": " + item_props_list[0][1])
+            for prop in item_props_list[1:]:
+                print((len(str(item_choices)) + 1) * " " + prop[0] + ": " + prop[1])
 
     choices = item_choices
     print("{:-^80}".format(" Actions "))
