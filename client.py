@@ -173,10 +173,9 @@ if __name__ == "__main__":
                 try:
                     resp.raise_for_status()
                 except requests.HTTPError:
-                    prev_href_list = prev_href.split("/")
-                    del prev_href_list[-2]
-                    prev_href = "/".join(prev_href_list)
-                    href = prev_href
+                    href_list = href.split("/")
+                    del href_list[-2]
+                    href = "/".join(href_list)
                     continue
 
                 print("{:=^80}".format(" " + href + " "))
