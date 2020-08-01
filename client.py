@@ -19,7 +19,7 @@ def prompt_from_body(body):
         del props["@namespaces"]
         del props["@controls"]
         for prop in props.items():
-            print(prop[0] + ": " + prop[1])
+            print(str(prop[0]) + ": " + str(prop[1]))
     else:
         print("{:-^80}".format(" Collection "))
         for item in body["items"]:
@@ -27,9 +27,9 @@ def prompt_from_body(body):
             item_props = item.copy()
             del item_props["@controls"]
             item_props_list = list(item_props.items())
-            print(item_choices, item_props_list[0][0] + ": " + item_props_list[0][1])
+            print(item_choices, str(item_props_list[0][0]) + ": " + str(item_props_list[0][1]))
             for prop in item_props_list[1:]:
-                print((len(str(item_choices)) + 1) * " " + prop[0] + ": " + prop[1])
+                print((len(str(item_choices)) + 1) * " " + str(prop[0]) + ": " + str(prop[1]))
 
     choices = item_choices
     print("{:-^80}".format(" Actions "))
@@ -38,8 +38,8 @@ def prompt_from_body(body):
         print(choices, ctrl)
 
     pick = 0
+    print("{:-^80}".format(" Prompt "))
     while pick < 1 or pick > choices:
-        print("{:-^80}".format(" Prompt "))
         pick = input("Pick " + ("an item or " if item_choices else "") + "an action (number): ")
         try:
             pick = int(pick)
@@ -66,7 +66,6 @@ def prompt_from_schema(ctrl):
     while i < len(properties):
         prop = list(properties.keys())[i]
 
-        print("{:-^80}".format(" Prompt "))
         req_data[prop] = input(properties[prop]["description"] + " (" + ("required" if prop in required else "optional") + "): ")
 
         if req_data[prop]:
