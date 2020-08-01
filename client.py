@@ -164,7 +164,12 @@ if __name__ == "__main__":
         with requests.Session() as s:
             href = prev_href = "/api/"
             while True:
-                resp = s.get(API_URL + href)
+                try:
+                    resp = s.get(API_URL + href)
+                except requests.ConnectionError:
+                    print("Connection error occurred")
+                    continue
+
                 try:
                     resp.raise_for_status()
                 except requests.HTTPError:
