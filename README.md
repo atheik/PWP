@@ -61,6 +61,7 @@ http://localhost:5000/api/
 
 Make sure your environment is setup as in the development configuration described above.  
 The coverage reported for the database and resource tests should be 98%.
+The database and resource tests exist in order to enforce correctness by catching possible functionality-affecting errors introduced by recent changes.
 
 ```sh
 pytest --cov=imagenet_browser --cov-report=term-missing
